@@ -1,63 +1,85 @@
 import random
 import re
 import os
-
-class Data:
-    """ To store the apps data """
-    cards_dict = {}
-    user_file = ''
+import sys
 
 
 class App:
+
+    #class variables
+    cards_dict = {}
+    random_question = ''
+    random_answer = ''
+    flashcard = ''
+    format = ''
+    get_answer = ''
+
+
     def make_flashcard_dict(self):
         """ opens file for reading, splits answer and
         question from each line, adds to cards_dict """
 
-        #get_file = User.get_file_from_user(self)
+        get_file = User.get_file_from_user(self)
 
-
-        with open('some_file.txt','r') as f:
+        with open(get_file,'r') as f:
             for line in f:
                 split_lines = line.split(',')
                 question = split_lines[0].strip()
                 answer = split_lines[1].strip()
-                Data.cards_dict[question] = answer
-        #print(Data.cards_dict)
-
+                App.cards_dict[question] = answer
 
 
     def flash_card_loop(self):
         """ Main app loop """
         
+        print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
         print('Welcome to the Flashcard App.')
-        print("You can always type 'exit' in console to close app")
+        print("You can always type 'exit' in console to close app\n")
 
+        User.get_format(self)
         while True:
+            App.random_question = random.choice(list(App.cards_dict.keys()))
+            App.random_answer = App.cards_dict[App.random_question]
+            App.set_flashcard(self)
 
-            random_question = random.choice(list(Data.cards_dict.keys()))
-            get_answer = User.get_answer(self, random_question)
+            App.get_answer = User.get_answer(self)
 
-            if not get_answer:
+            if not App.get_answer:
                 print("Hope you had fun!")
                 return False
             
-            App.give_results(self,random_question, get_answer)
+            App.give_results(self)
 
-    def give_results(self, question, user_answer):
+
+    def give_results(self):
         """ checks if answer was correct or not """
-        answer = Data.cards_dict[question]  
-        if answer == user_answer:
+        question = App.random_question
+
+        if App.format == 'q':
+            answer = App.random_answer
+        if App.format == 'a':
+            answer = App.random_question
+
+        if answer == App.get_answer.lower():
             print('correct!')
         else:
             print('not quite! Answer was %s' % answer)
 
+    def set_flashcard(self):
+        """ sets the side to show(Q or A) when prompting user """
+        if App.format == 'a':
+            App.flashcard = App.random_answer
+        if App.format == 'q':
+            App.flashcard = App.random_question
+
+
 
 
 class User:
-    def get_answer(self, user_question):
+    def get_answer(self):
         """ grab answer, return if valid, or exit """
         while True:
-            answer = input('Question: %s ' % user_question)
+            answer = input('Question: %s ' % App.flashcard)
             if answer == 'exit':
                 return False
             elif User.validate_answer(answer):
@@ -65,9 +87,8 @@ class User:
             else:
                 print("Please enter valid input")
                 print("Make sure answers dont contain special characters")
-                print("make sure answers arent blank")
+                print("make sure answers arent blank\n")
                 
-
 
     def validate_answer(answer):
         """ check user's answer to check if it's not blank"""
@@ -80,6 +101,7 @@ class User:
         else:
             return True
 
+
     def get_file_from_user(self):
         print('Make sure the file you choose is seperated by commas')
         print('in question/answer format')
@@ -90,8 +112,17 @@ class User:
                 return selected_file
             else:
                 print("file doesn't appear to exist")
-                print("Please try again")
+                print("Please try again\n")
 
+#TO-DO: implement this feature to app
+    def get_format(self):
+        user_format = input("select by question or answer")
+        if user_format == 'question':
+            App.format = 'q'
+        elif user_format == 'answer':
+            App.format = 'a'
+        else:
+            App.format = 'q' #default
 
 
 class Main:
