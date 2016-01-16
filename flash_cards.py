@@ -8,11 +8,16 @@ class App:
 
     #class variables
     cards_dict = {}
+
+    #generated question/answers, and user guess
     random_question = ''
     random_answer = ''
     flashcard = ''
-    format = ''
     get_answer = ''
+
+    #options
+    format = ''
+    options = False
 
 
     def make_flashcard_dict(self):
@@ -60,9 +65,10 @@ class App:
         if App.format == 'a':
             answer = App.random_question
 
-        if answer == App.get_answer.lower():
+        if answer.lower() == App.get_answer.lower():
             print('correct!')
         else:
+            print(App.get_answer)
             print('not quite! Answer was %s' % answer)
 
     def set_flashcard(self):
@@ -82,6 +88,8 @@ class User:
             answer = input('Question: %s ' % App.flashcard)
             if answer == 'exit':
                 return False
+            elif answer == 'options':
+                User.give_options(self)
             elif User.validate_answer(answer):
                 return answer
             else:
@@ -114,7 +122,7 @@ class User:
                 print("file doesn't appear to exist")
                 print("Please try again\n")
 
-#TO-DO: implement this feature to app
+
     def get_format(self):
         user_format = input("select by question or answer")
         if user_format == 'question':
@@ -123,6 +131,16 @@ class User:
             App.format = 'a'
         else:
             App.format = 'q' #default
+
+    def give_options(self):
+        print("~~~~~~~~~~~~~~~~~~")
+        print("OPTIONS:\tCOMMAND")
+        print("q/a format: change_format")
+        user_option = input()
+
+        if user_option == 'change_format':
+            User.get_format(self)
+            App.set_flashcard(self)
 
 
 class Main:
