@@ -56,6 +56,7 @@ class App:
             App.give_results(self)
 
 
+
     def give_results(self):
         """ checks if answer was correct or not """
         question = App.random_question
@@ -68,7 +69,6 @@ class App:
         if answer.lower() == App.get_answer.lower():
             print('correct!')
         else:
-            print(App.get_answer)
             print('not quite! Answer was %s' % answer)
 
     def set_flashcard(self):
@@ -89,7 +89,8 @@ class User:
             if answer == 'exit':
                 return False
             elif answer == 'options':
-                User.give_options(self)
+                v = User.give_options(self)
+                return v
             elif User.validate_answer(answer):
                 return answer
             else:
@@ -136,11 +137,18 @@ class User:
         print("~~~~~~~~~~~~~~~~~~")
         print("OPTIONS:\tCOMMAND")
         print("q/a format: change_format")
+        print("change file: change_file")
         user_option = input()
 
         if user_option == 'change_format':
             User.get_format(self)
             App.set_flashcard(self)
+
+        elif user_option == 'change_file':
+            App.cards_dict = {}
+            App.make_flashcard_dict(self)
+            App.flash_card_loop(self)
+            return False
 
 
 class Main:
