@@ -3,6 +3,32 @@ import re
 import os
 import sys
 
+#all console prints/options for east editing
+#function name is print followed by function name in which print statement
+#occurs
+
+def print_flashcard_loop():
+    """printing for App.flash_card_loop"""
+    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+    print('Welcome to the Flashcard App.')
+    print("You can always type 'exit' in console to close app")
+    print("type options to access additional features\n")
+
+def print_get_answer():
+    print("Please enter valid input")
+    print("Make sure answers dont contain special characters")
+    print("make sure answers arent blank\n")
+
+def print_get_file_from_user():
+    print('Make sure the file you choose is seperated by commas')
+    print('in question/answer format\n')
+
+def print_give_options():
+    print("~~~~~~~~~~~~~~~~~~")
+    print("OPTIONS:\tCOMMAND")
+    print("q/a format: change_format")
+    print("change file: change_file")
+
 
 class App:
 
@@ -36,12 +62,10 @@ class App:
 
     def flash_card_loop(self):
         """ Main app loop """
-        
-        print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-        print('Welcome to the Flashcard App.')
-        print("You can always type 'exit' in console to close app\n")
 
+        print_flashcard_loop()
         User.get_format(self)
+
         while True:
             App.random_question = random.choice(list(App.cards_dict.keys()))
             App.random_answer = App.cards_dict[App.random_question]
@@ -49,12 +73,13 @@ class App:
 
             App.get_answer = User.get_answer(self)
 
-            if not App.get_answer:
+            if App.get_answer == 'options':
+                v = User.give_options(self)
+            elif not App.get_answer:
                 print("Hope you had fun!")
                 return False
-            
-            App.give_results(self)
-
+            else:
+                App.give_results(self)
 
 
     def give_results(self):
@@ -79,8 +104,6 @@ class App:
             App.flashcard = App.random_question
 
 
-
-
 class User:
     def get_answer(self):
         """ grab answer, return if valid, or exit """
@@ -89,14 +112,11 @@ class User:
             if answer == 'exit':
                 return False
             elif answer == 'options':
-                v = User.give_options(self)
-                return v
+                return answer
             elif User.validate_answer(answer):
                 return answer
             else:
-                print("Please enter valid input")
-                print("Make sure answers dont contain special characters")
-                print("make sure answers arent blank\n")
+                print_get_answer()
                 
 
     def validate_answer(answer):
@@ -112,8 +132,7 @@ class User:
 
 
     def get_file_from_user(self):
-        print('Make sure the file you choose is seperated by commas')
-        print('in question/answer format')
+        print_get_file_from_user()
 
         while True:
             selected_file = input('To get started, choose a file\n')
@@ -133,11 +152,9 @@ class User:
         else:
             App.format = 'q' #default
 
+
     def give_options(self):
-        print("~~~~~~~~~~~~~~~~~~")
-        print("OPTIONS:\tCOMMAND")
-        print("q/a format: change_format")
-        print("change file: change_file")
+        print_give_options()
         user_option = input()
 
         if user_option == 'change_format':
@@ -147,8 +164,8 @@ class User:
         elif user_option == 'change_file':
             App.cards_dict = {}
             App.make_flashcard_dict(self)
-            App.flash_card_loop(self)
             return False
+
 
 
 class Main:
