@@ -9,17 +9,19 @@ import sys
 
 def print_flashcard_loop():
     """printing for App.flash_card_loop"""
-    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+    print("~~~~~~~~~~~~~~~~~~")
     print('Welcome to the Flashcard App.')
     print("You can always type 'exit' in console to close app")
     print("type options to access additional features\n")
 
 def print_get_answer():
+    print("~~~~~~~~~~~~~~~~~~")
     print("Please enter valid input")
     print("Make sure answers dont contain special characters")
     print("make sure answers arent blank\n")
 
 def print_get_file_from_user():
+    print("~~~~~~~~~~~~~~~~~~")
     print('Make sure the file you choose is seperated by commas')
     print('in question/answer format\n')
 
@@ -29,6 +31,18 @@ def print_give_options():
     print("q/a format: change_format")
     print("change file: change_file")
 
+def print_get_format():
+    print("~~~~~~~~~~~~~~~~~~")
+    print('FORMAT:')
+    print('select by question or answer')
+    print('leave blank for default (question format)\n')
+
+def print_make_flashcard_dict():
+    print("~~~~~~~~~~~~~~~~~~")
+    print("You can either import a file or")
+    print("Make a custom set from CLI")
+    print("type [file] or [custom]")
+    print("leave blank for default [custom]\n")
 
 class App:
 
@@ -50,14 +64,21 @@ class App:
         """ opens file for reading, splits answer and
         question from each line, adds to cards_dict """
 
-        get_file = User.get_file_from_user(self)
+        print_make_flashcard_dict()
+        file_or_manual = input()
+        if file_or_manual == 'file':
+            get_file = User.get_file_from_user(self)
 
-        with open(get_file,'r') as f:
-            for line in f:
-                split_lines = line.split(',')
-                question = split_lines[0].strip()
-                answer = split_lines[1].strip()
-                App.cards_dict[question] = answer
+            with open(get_file,'r') as f:
+                for line in f:
+                    split_lines = line.split(',')
+                    question = split_lines[0].strip()
+                    answer = split_lines[1].strip()
+                    App.cards_dict[question] = answer
+        elif file_or_manual == 'manual':
+            User.make_custom_dict(self)
+        else: #default
+            User.make_custom_dict(self)
 
 
     def flash_card_loop(self):
@@ -92,9 +113,9 @@ class App:
             answer = App.random_question
 
         if answer.lower() == App.get_answer.lower():
-            print('correct!')
+            print('correct!\n')
         else:
-            print('not quite! Answer was %s' % answer)
+            print('not quite! Answer was %s\n' % answer)
 
     def set_flashcard(self):
         """ sets the side to show(Q or A) when prompting user """
@@ -109,12 +130,16 @@ class User:
         """ grab answer, return if valid, or exit """
         while True:
             answer = input('Question: %s ' % App.flashcard)
+
             if answer == 'exit':
                 return False
+
             elif answer == 'options':
                 return answer
+
             elif User.validate_answer(answer):
                 return answer
+
             else:
                 print_get_answer()
                 
@@ -135,7 +160,7 @@ class User:
         print_get_file_from_user()
 
         while True:
-            selected_file = input('To get started, choose a file\n')
+            selected_file = input("File: ")
             if os.path.exists(selected_file):
                 return selected_file
             else:
@@ -144,7 +169,8 @@ class User:
 
 
     def get_format(self):
-        user_format = input("select by question or answer")
+        print_get_format()
+        user_format = input()
         if user_format == 'question':
             App.format = 'q'
         elif user_format == 'answer':
@@ -166,6 +192,9 @@ class User:
             App.make_flashcard_dict(self)
             return False
 
+    def make_custom_dict(self):
+        """ user creates own flashcard dict """
+        print('custom')
 
 
 class Main:
